@@ -1,11 +1,13 @@
 package com.template.spring_mvc.config;
 
 import com.template.spring_mvc.model.Permission;
+import com.template.spring_mvc.model.Facultad;
 import com.template.spring_mvc.model.Role;
 import com.template.spring_mvc.model.User;
 import com.template.spring_mvc.repository.PermissionRepository;
 import com.template.spring_mvc.repository.RoleRepository;
 import com.template.spring_mvc.repository.UserRepository;
+import com.template.spring_mvc.repository.FacultadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,8 +28,30 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private FacultadRepository facultadRepository;
+
     @Override
     public void run(String... args) throws Exception {
+        // Semillas de Facultades (solo si no hay registros)
+        if (facultadRepository.count() == 0) {
+            Facultad f1 = new Facultad();
+            f1.setNombre("Ingeniería");
+            f1.setActivo(true);
+
+            Facultad f2 = new Facultad();
+            f2.setNombre("Ciencias Económicas");
+            f2.setActivo(true);
+
+            Facultad f3 = new Facultad();
+            f3.setNombre("Humanidades");
+            f3.setActivo(true);
+
+            facultadRepository.save(f1);
+            facultadRepository.save(f2);
+            facultadRepository.save(f3);
+        }
+
         // Crear permiso
         Permission readPerm = new Permission();
         readPerm.setName("READ_USER");
