@@ -49,13 +49,13 @@ public class DataInitializer implements CommandLineRunner {
 
         // Crear Rol
         Role userRole = new Role();
-        userRole.setName("ROLE_USER");
+        userRole.setName("ROLE_ESTUDIANTE");
         roleRepository.save(userRole);
 
         User readUser = new User();
-        readUser.setEmail("guest@gmail.com");
-        readUser.setPassword(passwordEncoder.encode("guest123"));
-        readUser.setName("Guest");
+        readUser.setEmail("student_1@example.com");
+        readUser.setPassword(passwordEncoder.encode("student123"));
+        readUser.setName("Student One");
         readUser.getRoles().add(userRole);
         userRepository.save(readUser);
     }
