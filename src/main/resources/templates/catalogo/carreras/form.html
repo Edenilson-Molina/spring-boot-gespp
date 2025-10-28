@@ -9,28 +9,29 @@
 <div class="container mx-auto p-6 max-w-2xl">
     <h1 class="text-3xl font-bold text-blue-600 mb-6" th:text="${carrera.id} != null ? 'Editar Carrera' : 'Nueva Carrera'"></h1>
 
-    <form th:action="${carrera.id} != null ? @{'/admin/catalogo/carreras/' + ${carrera.id}} : @{/admin/catalogo/carreras}"
-          method="post" class="bg-white rounded shadow p-6 flex flex-col gap-4">
+    <form th:object="${carrera}"
+        th:action="${carrera.id} != null ? @{'/admin/catalogo/carreras/' + ${carrera.id}} : @{/admin/catalogo/carreras}"
+        method="post" class="bg-white rounded shadow p-6 flex flex-col gap-4">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
         <div>
-            <label class="block text-sm font-medium text-gray-600 mb-1">Nombre</label>
-            <input type="text" name="nombre" th:value="${carrera.nombre}"
+         <label class="block text-sm font-medium text-gray-600 mb-1">Nombre *</label>
+         <input type="text" th:field="*{nombre}"
                    class="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500" required>
+         <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-600 mb-1">Facultad</label>
-            <select name="facultad.id" class="w-full p-2 border rounded" required>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Facultad *</label>
+            <select th:field="*{facultad.id}" class="w-full p-2 border rounded">
                 <option value="" disabled th:selected="${carrera.facultad} == null">-- Seleccione --</option>
-                <option th:each="fac : ${facultades}" th:value="${fac.id}" th:text="${fac.nombre}"
-                        th:selected="${carrera.facultad != null and carrera.facultad.id == fac.id}">
-                </option>
+                <option th:each="fac : ${facultades}" th:value="${fac.id}" th:text="${fac.nombre}"></option>
             </select>
+            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('facultad')}" th:errors="*{facultad}"></p>
         </div>
 
         <div class="flex items-center gap-2" th:if="${carrera.id} != null">
-            <input type="checkbox" name="activo" th:field="*{carrera.activo}" class="h-4 w-4">
+            <input type="checkbox" th:field="*{activo}" class="h-4 w-4">
             <label class="text-sm text-gray-700">Activo</label>
         </div>
 

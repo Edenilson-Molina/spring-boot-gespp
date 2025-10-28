@@ -1,6 +1,8 @@
 package com.template.spring_mvc.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,9 +24,11 @@ public class Facultad {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "El nombre es requerido")
     private String nombre;
 
     @Column(nullable = false)
+    @NotNull(message = "El estado activo es requerido")
     private Boolean activo = true;
 
     @OneToMany(mappedBy = "facultad", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
