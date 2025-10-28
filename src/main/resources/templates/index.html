@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <title>Spring MVC Template</title>
@@ -8,30 +9,50 @@
 <body class="bg-gray-100 font-sans">
 <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold text-blue-600 mb-4">Lista de Usuarios</h1>
-    <!-- CORRECTO: sin ROLE_ -->
-    <div sec:authorize="hasRole('ESTUDIANTE')">
+
+    <!-- DEBUG: Muestra si está autenticado y sus roles -->
+    <div sec:authorize="isAuthenticated()">
+        <p class="bg-yellow-100 p-2 rounded">
+            Autenticado como: <strong sec:authentication="name"></strong><br>
+            Roles: <span sec:authentication="principal.authorities"></span>
+        </p>
+    </div>
+
+    <!-- Botón solo para ESTUDIANTE -->
+    <div sec:authorize="hasRole('ROLE_ESTUDIANTE')">
         <button class="bg-red-500 text-white p-2 rounded">Estudiante Only</button>
     </div>
 
-    <div sec:authorize="hasRole('ADMIN')">
+    <!-- Botón solo para ADMIN -->
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
         <button class="bg-green-500 text-white p-2 rounded">Admin Only</button>
     </div>
 
-    <!-- Mostrar nombre de usuario autenticado -->
-    <p sec:authorize="!isAuthenticated()">
-        Bienvenido, <span sec:authentication="name"></span>!
-        <a th:href="@{/logout}" class="text-blue-600 underline">Cerrar sesión</a>
-    </p>
-    <!-- Formulario para agregar usuario -->
+    <!-- Mostrar solo si NO está autenticado -->
+    <div sec:authorize="!isAuthenticated()">
+        <p><a th:href="@{/login}" class="text-blue-600 underline">Iniciar sesión</a></p>
+    </div>
+
+    <!-- Mostrar solo si SÍ está autenticado -->
+    <div sec:authorize="isAuthenticated()">
+        <p>
+            Bienvenido, <span sec:authentication="name"></span>!
+            <a th:href="@{/logout}" class="text-blue-600 underline ml-2">Cerrar sesión</a>
+        </p>
+    </div>
+
+    <!-- Formulario -->
     <form th:action="@{/user}" method="post" class="mb-6">
         <div class="flex flex-col gap-4 max-w-md">
             <input type="text" name="name" placeholder="Nombre" class="p-2 border rounded">
             <input type="email" name="email" placeholder="Email" class="p-2 border rounded">
-            <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Agregar</button>
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                Agregar
+            </button>
         </div>
     </form>
 
-    <!-- Lista de usuarios -->
+    <!-- Tabla -->
     <table class="w-full border-collapse border">
         <thead>
         <tr class="bg-gray-200">
