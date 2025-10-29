@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expedientes</title>
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="max-w-6xl mx-auto py-10">
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+        <h1 class="text-2xl font-bold text-blue-600 mb-6">Expedientes</h1>
+        <table class="w-full border-collapse">
+            <thead>
+            <tr class="bg-gray-200">
+                <th class="p-2 border">ID</th>
+                <th class="p-2 border">Carnet</th>
+                <th class="p-2 border">Nombre</th>
+                <th class="p-2 border">Apellidos</th>
+                <th class="p-2 border">Carrera</th>
+                <th class="p-2 border">Estado</th>
+                <th class="p-2 border">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${expedientes}">
+                <td class="p-2 border" th:text="${e.id}"></td>
+                <td class="p-2 border" th:text="${e.estudiante.carnet}"></td>
+                <td class="p-2 border" th:text="${e.estudiante.user.name}"></td>
+                <td class="p-2 border" th:text="${e.estudiante.user.apellidos}"></td>
+                <td class="p-2 border" th:text="${e.carrera.nombre}"></td>
+                <td class="p-2 border" th:text="${e.estado}"></td>
+                <td class="p-2 border">
+                    <a th:href="@{'/admin/expedientes/' + ${e.id} + '/editar'}" class="text-blue-600 hover:underline">Editar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="mt-6">
+            <a th:href="@{/}" class="text-blue-600 hover:underline">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

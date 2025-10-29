@@ -28,7 +28,7 @@ import java.time.Period;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/expediente/estudiante")
+@RequestMapping("/registro/estudiante")
 public class EstudianteRegistroController {
 
     private final EstudianteService estudianteService;

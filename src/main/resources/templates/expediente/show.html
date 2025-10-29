@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expediente</title>
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="max-w-3xl mx-auto py-10">
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+        <h1 class="text-2xl font-bold text-blue-600 mb-6">Detalle de Expediente</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <span class="font-semibold">Carnet:</span>
+                <span th:text="${expediente.estudiante.carnet}"></span>
+            </div>
+            <div>
+                <span class="font-semibold">Estudiante:</span>
+                <span th:text="${expediente.estudiante.user.name + ' ' + expediente.estudiante.user.apellidos}"></span>
+            </div>
+            <div>
+                <span class="font-semibold">Carrera:</span>
+                <span th:text="${expediente.carrera.nombre}"></span>
+            </div>
+            <div>
+                <span class="font-semibold">Oferta:</span>
+                <span th:text="${expediente.oferta.nombre}"></span>
+            </div>
+            <div>
+                <span class="font-semibold">Fecha inicio:</span>
+                <span th:text="${expediente.fechaInicio}"></span>
+            </div>
+            <div>
+                <span class="font-semibold">Fecha fin:</span>
+                <span th:text="${expediente.fechaFin}"></span>
+            </div>
+            <div class="md:col-span-2">
+                <span class="font-semibold">Estado:</span>
+                <span th:text="${expediente.estado}"></span>
+            </div>
+        </div>
+        <div class="mt-6">
+            <a th:href="@{/}" class="text-blue-600 hover:underline">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

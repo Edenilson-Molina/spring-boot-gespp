@@ -18,14 +18,14 @@
         </p>
     </div>
 
-    <!-- Botón solo para ESTUDIANTE -->
-    <div sec:authorize="hasRole('ROLE_ESTUDIANTE')">
-        <button class="bg-red-500 text-white p-2 rounded">Estudiante Only</button>
+    <!-- Acción para ESTUDIANTE: Crear Expediente -->
+    <div sec:authorize="hasRole('ROLE_ESTUDIANTE')" class="mb-4">
+        <a th:href="@{/expediente/nuevo}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Crear Expediente</a>
     </div>
 
-    <!-- Botón solo para ADMIN -->
-    <div sec:authorize="hasRole('ROLE_ADMIN')">
-        <button class="bg-green-500 text-white p-2 rounded">Admin Only</button>
+    <!-- Acción para ADMIN: Listado de Expedientes -->
+    <div sec:authorize="hasRole('ROLE_ADMIN')" class="mb-4">
+        <a th:href="@{/admin/expedientes}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Ver Expedientes</a>
     </div>
 
     <!-- Mostrar solo si NO está autenticado -->

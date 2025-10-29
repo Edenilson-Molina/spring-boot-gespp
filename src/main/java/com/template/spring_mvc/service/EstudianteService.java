@@ -46,4 +46,9 @@ public class EstudianteService {
     public boolean existsByDui(String dui) {
         return estudianteRepository.existsByDui(dui);
     }
+
+    @Transactional(readOnly = true)
+    public java.util.Optional<Estudiante> findByUserEmail(String email) {
+        return estudianteRepository.findByUserEmail(email);
+    }
 }

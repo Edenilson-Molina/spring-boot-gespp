@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Expediente</title>
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="max-w-3xl mx-auto py-10">
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+        <h1 class="text-2xl font-bold text-blue-600 mb-6">Editar Expediente</h1>
+        <div th:if="${error}" class="bg-red-100 text-red-700 p-2 rounded mb-4" th:text="${error}"></div>
+        <form th:action="@{'/admin/expedientes/' + ${expediente.id} + '/editar'}" method="post" class="grid grid-cols-1 gap-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div>
+                <label class="block text-sm text-gray-600">Estudiante</label>
+                <input type="text" class="w-full p-2 border rounded bg-gray-100" th:value="${expediente.estudiante.carnet + ' - ' + expediente.estudiante.user.name + ' ' + expediente.estudiante.user.apellidos}" disabled>
+            </div>
+
+            <div>
+                <label class="block text-sm text-gray-600">Carrera</label>
+                <input type="text" class="w-full p-2 border rounded bg-gray-100" th:value="${expediente.carrera.nombre}" disabled>
+            </div>
+
+            <div>
+                <label class="block text-sm text-gray-600">Oferta</label>
+                <select name="ofertaId" class="w-full p-2 border rounded">
+                    <option th:each="o : ${ofertas}" th:value="${o.id}" th:text="${o.nombre}" th:selected="${o.id == expediente.oferta.id}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm text-gray-600">Estado</label>
+                <select name="estado" class="w-full p-2 border rounded">
+                    <option th:each="s : ${estados}" th:value="${s}" th:text="${s}" th:selected="${s == expediente.estado}"></option>
+                </select>
+            </div>
+
+            <div class="flex justify-end">
+                <a th:href="@{/admin/expedientes}" class="mr-3 text-gray-600 hover:underline">Cancelar</a>
+                <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

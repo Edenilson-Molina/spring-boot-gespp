@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
     boolean existsByCarnet(String carnet);
     boolean existsByDui(String dui);
+
+    java.util.Optional<Estudiante> findByUserEmail(String email);
 }
