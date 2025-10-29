@@ -37,7 +37,10 @@
     <div sec:authorize="isAuthenticated()">
         <p>
             Bienvenido, <span sec:authentication="name"></span>!
-            <a th:href="@{/logout}" class="text-blue-600 underline ml-2">Cerrar sesión</a>
+            <form th:action="@{/logout}" method="post" class="inline">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="text-blue-600 underline ml-2">Cerrar sesión</button>
+            </form>
         </p>
     </div>
 

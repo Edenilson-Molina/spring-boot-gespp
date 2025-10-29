@@ -43,8 +43,12 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout
-                .permitAll()
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
             )
             .exceptionHandling(exception -> exception
                 .accessDeniedPage("/access-denied")
