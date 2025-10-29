@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 @RequestMapping("/admin/expedientes")
@@ -40,11 +42,16 @@ public class AdminExpedienteController {
                 .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
         model.addAttribute("expediente", expediente);
         model.addAttribute("estados", ESTADOS);
-        model.addAttribute("ofertas", ofertaService.findAll());
+    List<Oferta> opciones = ofertaService.findAll().stream()
+        .filter(o -> (o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+            || o.getId().equals(expediente.getOferta().getId()))
+        .collect(Collectors.toList());
+    model.addAttribute("ofertas", opciones);
         return "expediente/edit";
     }
 
     @PostMapping("/{id}/editar")
+    @Transactional
     public String actualizar(@PathVariable Long id,
                              @RequestParam String estado,
                              @RequestParam(required = false) Long ofertaId,
@@ -54,17 +61,47 @@ public class AdminExpedienteController {
         if (!ESTADOS.contains(estado)) {
             model.addAttribute("expediente", expediente);
             model.addAttribute("estados", ESTADOS);
-            model.addAttribute("ofertas", ofertaService.findAll());
+        List<Oferta> opciones = ofertaService.findAll().stream()
+            .filter(o -> (o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+                || o.getId().equals(expediente.getOferta().getId()))
+            .collect(Collectors.toList());
+        model.addAttribute("ofertas", opciones);
             model.addAttribute("error", "Estado inválido");
             return "expediente/edit";
         }
-        expediente.setEstado(estado);
-        if (ofertaId != null) {
-            Oferta nueva = ofertaService.findById(ofertaId)
-                    .orElseThrow(() -> new IllegalArgumentException("Oferta no encontrada"));
-            expediente.setOferta(nueva);
+    expediente.setEstado(estado);
+    if (ofertaId != null && !ofertaId.equals(expediente.getOferta().getId())) {
+        // Validar cupo en la nueva oferta
+        Oferta actual = expediente.getOferta();
+        Oferta nueva = ofertaService.findById(ofertaId)
+            .orElseThrow(() -> new IllegalArgumentException("Oferta no encontrada"));
+
+        Integer ocupadosNueva = nueva.getOcupados() == null ? 0 : nueva.getOcupados();
+        Integer vacantesNueva = nueva.getVacantes() == null ? 0 : nueva.getVacantes();
+        if (ocupadosNueva + 1 > vacantesNueva) {
+        model.addAttribute("expediente", expediente);
+        model.addAttribute("estados", ESTADOS);
+        List<Oferta> opciones = ofertaService.findAll().stream()
+            .filter(o -> (o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+                || o.getId().equals(expediente.getOferta().getId()))
+            .collect(Collectors.toList());
+        model.addAttribute("ofertas", opciones);
+        model.addAttribute("error", "La oferta seleccionada no tiene cupo disponible");
+        return "expediente/edit";
         }
-        expedienteService.save(expediente);
+
+        // Actualizar ocupados: -1 a oferta actual (sin bajar de 0), +1 a nueva oferta
+        Integer ocupadosActual = actual.getOcupados() == null ? 0 : actual.getOcupados();
+        actual.setOcupados(Math.max(0, ocupadosActual - 1));
+        nueva.setOcupados(ocupadosNueva + 1);
+
+        // Persistir cambios
+        ofertaService.save(actual);
+        ofertaService.save(nueva);
+
+        expediente.setOferta(nueva);
+    }
+    expedienteService.save(expediente);
         return "redirect:/admin/expedientes";
     }
 }

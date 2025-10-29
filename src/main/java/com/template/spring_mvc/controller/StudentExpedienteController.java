@@ -14,6 +14,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 @RequestMapping("/expediente")
@@ -39,12 +41,16 @@ public class StudentExpedienteController {
     public String nuevo(Model model) {
         model.addAttribute("expediente", new ExpedienteCreateDto());
         model.addAttribute("carreras", carreraService.findAll());
-        model.addAttribute("ofertas", ofertaService.findAll());
+        List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
+                .filter(o -> o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+                .collect(Collectors.toList());
+        model.addAttribute("ofertas", ofertasConCupo);
         return "expediente/form";
     }
 
     @PreAuthorize("hasRole('ESTUDIANTE')")
     @PostMapping
+    @Transactional
     public String crear(@Valid @ModelAttribute("expediente") ExpedienteCreateDto dto,
                         BindingResult result,
                         Model model,
@@ -55,7 +61,10 @@ public class StudentExpedienteController {
 
         if (result.hasErrors()) {
             model.addAttribute("carreras", carreraService.findAll());
-            model.addAttribute("ofertas", ofertaService.findAll());
+            List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
+                    .filter(o -> o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+                    .collect(Collectors.toList());
+            model.addAttribute("ofertas", ofertasConCupo);
             return "expediente/form";
         }
 
@@ -64,8 +73,21 @@ public class StudentExpedienteController {
 
         Carrera carrera = carreraService.findById(dto.getCarreraId())
                 .orElseThrow(() -> new IllegalArgumentException("Carrera no encontrada"));
-        Oferta oferta = ofertaService.findById(dto.getOfertaId())
+    Oferta oferta = ofertaService.findById(dto.getOfertaId())
                 .orElseThrow(() -> new IllegalArgumentException("Oferta no encontrada"));
+
+    // Verificar cupo disponible y actualizar ocupados
+    Integer ocupados = oferta.getOcupados() == null ? 0 : oferta.getOcupados();
+    Integer vacantes = oferta.getVacantes() == null ? 0 : oferta.getVacantes();
+    if (ocupados + 1 > vacantes) {
+        result.addError(new FieldError("expediente", "ofertaId", "La oferta seleccionada no tiene cupo disponible"));
+        model.addAttribute("carreras", carreraService.findAll());
+        List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
+            .filter(o -> o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+            .collect(Collectors.toList());
+        model.addAttribute("ofertas", ofertasConCupo);
+        return "expediente/form";
+    }
 
         Expediente expediente = new Expediente();
         expediente.setEstudiante(estudiante);
@@ -76,6 +98,9 @@ public class StudentExpedienteController {
         expediente.setEstado("Registrado");
         expediente.setActivo(true);
 
+    // Persistir cambios: primero actualizar oferta y luego el expediente
+    oferta.setOcupados(ocupados + 1);
+    ofertaService.save(oferta);
         expediente = expedienteService.save(expediente);
         return "redirect:/expediente/" + expediente.getId();
     }
