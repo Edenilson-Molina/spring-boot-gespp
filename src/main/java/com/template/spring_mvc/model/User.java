@@ -21,6 +21,8 @@ public class User implements UserDetails {
 
     private String name;
 
+    private String apellidos;
+
     @Column(unique = true)
     private String email;
 

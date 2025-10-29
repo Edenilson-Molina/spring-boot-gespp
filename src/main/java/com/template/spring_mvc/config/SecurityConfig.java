@@ -33,7 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/css/**", "/error").permitAll()  // Páginas públicas y error
+                .requestMatchers("/css/**", "/error", "/expediente/**").permitAll()  // Páginas públicas, registro estudiante y error
                 .requestMatchers("/admin/**").hasRole("ADMIN")  // Solo admins
                 .anyRequest().authenticated()  // Resto requiere login
             )
