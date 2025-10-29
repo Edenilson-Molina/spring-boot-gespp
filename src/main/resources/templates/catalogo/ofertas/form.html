@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${oferta.id} != null ? 'Editar Oferta' : 'Nueva Oferta'"></title>
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+<div class="container mx-auto p-6 max-w-2xl">
+    <h1 class="text-3xl font-bold text-blue-600 mb-2" th:text="${oferta.id} != null ? 'Editar Oferta' : 'Nueva Oferta'"></h1>
+    <p class="text-sm text-gray-500 mb-6">Los campos marcados con * son obligatorios</p>
+
+    <form th:object="${oferta}"
+          th:action="${oferta.id} != null ? @{'/admin/catalogo/ofertas/' + ${oferta.id}} : @{/admin/catalogo/ofertas}"
+          method="post" class="bg-white rounded shadow p-6 flex flex-col gap-4">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Supervisor *</label>
+            <select th:field="*{supervisor.id}" class="w-full p-2 border rounded" required>
+                <option value="" disabled th:selected="${oferta.supervisor} == null">-- Seleccione --</option>
+                <option th:each="s : ${supervisores}" th:value="${s.id}" th:text="${s.nombre + ' ' + s.apellido + ' — ' + s.empresa.nombre}"></option>
+            </select>
+            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('supervisor')}" th:errors="*{supervisor}"></p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Nombre *</label>
+            <input type="text" th:field="*{nombre}"
+                   class="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500" required>
+            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Descripción</label>
+            <textarea th:field="*{descripcion}" rows="3" class="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500" placeholder="Opcional"></textarea>
+            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Vacantes *</label>
+                <input type="number" min="0" th:field="*{vacantes}" class="w-full p-2 border rounded" required>
+                <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('vacantes')}" th:errors="*{vacantes}"></p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Ocupados</label>
+                <input type="number" th:value="${oferta.ocupados}" class="w-full p-2 border rounded bg-gray-100" disabled>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <input type="checkbox" th:field="*{activo}" class="h-4 w-4">
+            <label class="text-sm text-gray-700">Activo</label>
+        </div>
+
+        <div class="flex gap-2 justify-end">
+            <a th:href="@{/admin/catalogo/ofertas}" class="px-4 py-2 rounded border">Cancelar</a>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

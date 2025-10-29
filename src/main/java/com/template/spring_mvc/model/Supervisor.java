@@ -8,12 +8,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "supervisores")
 @Getter
 @Setter
-@ToString(exclude = {"empresa"})
+@ToString(exclude = {"empresa", "ofertas"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Supervisor {
     @Id
@@ -41,4 +43,7 @@ public class Supervisor {
     @JoinColumn(name = "empresa_id", nullable = false)
     @NotNull(message = "La empresa es requerida")
     private Empresa empresa;
+
+    @OneToMany(mappedBy = "supervisor", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
+    private Set<Oferta> ofertas = new HashSet<>();
 }
