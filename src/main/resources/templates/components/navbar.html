@@ -1,0 +1,52 @@
+<div th:fragment="navbar">
+    <nav class="bg-white border-b">
+        <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <!-- Left: Brand + mobile menu button -->
+                <div class="flex items-center gap-3">
+                    <button data-drawer-target="app-sidebar" data-drawer-toggle="app-sidebar" aria-controls="app-sidebar"
+                            class="lg:hidden inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none"
+                            type="button">
+                        <span class="sr-only">Abrir menú</span>
+                        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                        </svg>
+                    </button>
+                    <a th:href="@{/}" class="flex items-center gap-2">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white font-bold">G</span>
+                        <span class="text-lg font-semibold">GESPP</span>
+                    </a>
+                </div>
+
+                <!-- Center: Nav links (optional) -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a th:href="@{/}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Inicio</a>
+                    <a th:href="@{/admin/catalogo/carreras}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')">Carreras</a>
+                    <a th:href="@{/admin/catalogo/empresas}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')">Empresas</a>
+                </div>
+
+                <!-- Right: Auth actions -->
+                <div class="flex items-center gap-3">
+                    <div sec:authorize="hasRole('ROLE_ESTUDIANTE')" class="hidden sm:block">
+                        <a th:href="@{/expediente/nuevo}" class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">Crear expediente</a>
+                    </div>
+                    <div sec:authorize="hasRole('ROLE_ADMIN')" class="hidden sm:block">
+                        <a th:href="@{/admin/expedientes}" class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">Ver expedientes</a>
+                    </div>
+
+                    <!-- Not authenticated -->
+                    <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="inline-flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Iniciar sesión</a>
+
+                    <!-- Authenticated user dropdown simplified -->
+                    <div class="flex items-center gap-2" sec:authorize="isAuthenticated()">
+                        <span class="hidden sm:block text-sm text-gray-600">Hola, <strong sec:authentication="name"></strong></span>
+                        <form th:action="@{/logout}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="inline-flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Salir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>

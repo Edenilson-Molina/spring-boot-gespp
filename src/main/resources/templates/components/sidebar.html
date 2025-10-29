@@ -1,0 +1,33 @@
+<div th:fragment="sidebar" id="app-sidebar" class="h-full overflow-y-auto p-4">
+    <nav class="space-y-1">
+        <h2 class="px-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Catálogos</h2>
+        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/carreras}"
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+            <span class="mr-2">🎓</span> Carreras
+        </a>
+        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/empresas}"
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+            <span class="mr-2">🏢</span> Empresas
+        </a>
+        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/supervisores}"
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+            <span class="mr-2">🧑🏻‍💼</span> Supervisores
+        </a>
+        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/ofertas}"
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+            <span class="mr-2">💼</span> Ofertas
+        </a>
+
+        <div class="mt-4">
+            <h2 class="px-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Expediente</h2>
+            <a sec:authorize="hasRole('ROLE_ESTUDIANTE')" th:href="@{/expediente/nuevo}"
+               class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                <span class="mr-2">➕</span> Crear expediente
+            </a>
+            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/expedientes}"
+               class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                <span class="mr-2">📄</span> Ver expedientes
+            </a>
+        </div>
+    </nav>
+</div>
