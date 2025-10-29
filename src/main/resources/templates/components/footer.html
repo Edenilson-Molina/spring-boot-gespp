@@ -10,18 +10,4 @@
             </div>
         </div>
     </footer>
-    <!-- Drawer (sidebar) for mobile, toggled by navbar button -->
-    <div id="app-sidebar" class="fixed top-0 left-0 z-40 h-screen w-64 -translate-x-full bg-white p-4 shadow transition-transform lg:hidden" tabindex="-1" aria-labelledby="drawer-label">
-        <div class="mb-4 flex items-center justify-between">
-            <span id="drawer-label" class="text-base font-semibold">Menú</span>
-            <button type="button" data-drawer-hide="app-sidebar" aria-controls="app-sidebar"
-                    class="text-gray-400 hover:text-gray-900 focus:outline-none">
-                <span class="sr-only">Cerrar menú</span>
-                <svg class="h-6 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-        <div th:replace="~{components/sidebar :: sidebar}"></div>
-    </div>
 </div>
