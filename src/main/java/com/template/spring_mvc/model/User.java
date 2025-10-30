@@ -69,4 +69,12 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public String getFullName() {
+        String firstName = (name == null || name.trim().isEmpty()) ? "" : name.trim().split("\\s+")[0];
+        String firstApellido = (apellidos == null || apellidos.trim().isEmpty()) ? "" : apellidos.trim().split("\\s+")[0];
+        if (firstName.isEmpty()) return firstApellido;
+        if (firstApellido.isEmpty()) return firstName;
+        return firstName + " " + firstApellido;
+    }
 }
