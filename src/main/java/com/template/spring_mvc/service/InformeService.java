@@ -85,7 +85,7 @@ public class InformeService {
     // Guardamos la ruta relativa pública para servir el archivo
     informe.setArchivoPath("/uploads/informes/" + expediente.getId() + "/" + safeName);
         // estado regresa a pendiente al subir archivo
-        informe.setEstado(Informe.EstadoInforme.PENDIENTE_VERIFICACION);
+    informe.setEstado(Informe.EstadoInforme.PENDIENTE);
         informe.setComentario(null);
     return save(informe);
     }
@@ -103,7 +103,7 @@ public class InformeService {
                     inf.setExpediente(expediente);
                     inf.setMes(mes);
                     inf.setArchivoPath("/uploads/informes/" + expediente.getId() + "/" + mes + ".pdf");
-                    inf.setEstado(Informe.EstadoInforme.PENDIENTE_VERIFICACION);
+                    inf.setEstado(Informe.EstadoInforme.PENDIENTE);
                     informeRepository.save(inf);
                     created++;
                 }

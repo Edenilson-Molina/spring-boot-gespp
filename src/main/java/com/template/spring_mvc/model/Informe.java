@@ -40,13 +40,13 @@ public class Informe {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private EstadoInforme estado = EstadoInforme.PENDIENTE_VERIFICACION;
+    private EstadoInforme estado = EstadoInforme.PENDIENTE;
 
     @Size(max = 500)
     private String comentario;
 
     public enum EstadoInforme {
-        PENDIENTE_VERIFICACION,
+        PENDIENTE,
         RECHAZADO,
         OBSERVADO,
         APROBADO

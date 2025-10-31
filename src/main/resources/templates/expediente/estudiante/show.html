@@ -63,7 +63,7 @@
                             <div th:if="${informes[m.toString()] != null}">
                                 <div class="text-sm text-gray-500">Estado</div>
                                 <div class="inline-flex items-center gap-3">
-                                    <span class="text-sm px-2 py-1 rounded-full" th:classappend="${informes[m.toString()].estado.name()=='PENDIENTE_VERIFICACION'?'bg-yellow-100 text-yellow-800':(informes[m.toString()].estado.name()=='APROBADO'?'bg-green-100 text-green-700':(informes[m.toString()].estado.name()=='RECHAZADO'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'))}" th:text="${informes[m.toString()].estado}"></span>
+                                    <span class="text-sm px-2 py-1 rounded-full" th:classappend="${informes[m.toString()].estado.name()=='PENDIENTE'?'bg-yellow-100 text-yellow-800':(informes[m.toString()].estado.name()=='APROBADO'?'bg-green-100 text-green-700':(informes[m.toString()].estado.name()=='RECHAZADO'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'))}" th:text="${informes[m.toString()].estado}"></span>
                                     <a class="text-blue-600 hover:underline" th:href="${informes[m.toString()].archivoPath}" target="_blank">Ver PDF</a>
                                 </div>
                                 <div class="text-xs text-gray-500 mt-1" th:if="${informes[m.toString()].comentario}">

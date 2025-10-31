@@ -43,7 +43,7 @@
                             </div>
                             <div th:if="${informes[m.toString()] != null}" class="flex items-center gap-3">
                                 <a class="inline-flex rounded-lg bg-gray-700 px-3 py-1 text-sm font-medium text-white hover:bg-gray-800" th:href="${informes[m.toString()].archivoPath}" target="_blank">Ver PDF</a>
-                                <span class="text-xs px-2 py-1 rounded-full" th:classappend="${informes[m.toString()].estado.name()=='PENDIENTE_VERIFICACION'?'bg-yellow-100 text-yellow-800':(informes[m.toString()].estado.name()=='APROBADO'?'bg-green-100 text-green-700':(informes[m.toString()].estado.name()=='RECHAZADO'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'))}" th:text="${informes[m.toString()].estado}"></span>
+                                <span class="text-xs px-2 py-1 rounded-full" th:classappend="${informes[m.toString()].estado.name()=='PENDIENTE'?'bg-yellow-100 text-yellow-800':(informes[m.toString()].estado.name()=='APROBADO'?'bg-green-100 text-green-700':(informes[m.toString()].estado.name()=='RECHAZADO'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'))}" th:text="${informes[m.toString()].estado}"></span>
                             </div>
                             <div th:if="${informes[m.toString()] == null}" class="text-sm text-gray-500">Sin archivo</div>
                         </div>
@@ -53,7 +53,7 @@
                                     <div>
                                         <label class="block text-sm text-gray-600 mb-1">Estado</label>
                                         <select name="estado" class="w-full rounded border-gray-300 text-sm">
-                                            <option th:selected="${informes[m.toString()].estado.name()=='PENDIENTE_VERIFICACION'}" value="PENDIENTE_VERIFICACION">Pendiente verificación</option>
+                                            <option th:selected="${informes[m.toString()].estado.name()=='PENDIENTE'}" value="PENDIENTE">Pendiente</option>
                                             <option th:selected="${informes[m.toString()].estado.name()=='OBSERVADO'}" value="OBSERVADO">Observado</option>
                                             <option th:selected="${informes[m.toString()].estado.name()=='RECHAZADO'}" value="RECHAZADO">Rechazado</option>
                                             <option th:selected="${informes[m.toString()].estado.name()=='APROBADO'}" value="APROBADO">Aprobado</option>
