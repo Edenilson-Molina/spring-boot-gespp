@@ -1,0 +1,46 @@
+<div th:replace="~{components/base :: layout(~{::content})}">
+    <div th:fragment="content" class="container mx-auto p-6 max-w-4xl">
+        <div class="mb-4">
+            <a th:href="@{/expediente/mis}" class="text-blue-600 hover:underline">← Volver a mis expedientes</a>
+        </div>
+
+        <div class="rounded-lg border bg-white p-8 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Expediente</h1>
+                <span class="text-xs px-2 py-1 rounded-full"
+                      th:classappend="${expediente.estado=='Registrado'?'bg-blue-100 text-blue-700':
+                                       expediente.estado=='En curso'?'bg-green-100 text-green-700':
+                                       expediente.estado=='Suspendido'?'bg-yellow-100 text-yellow-800':
+                                       expediente.estado=='Finalizado'?'bg-gray-200 text-gray-700':'bg-red-100 text-red-700'}"
+                      th:text="${expediente.estado}"></span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="text-sm text-gray-500">Carnet</div>
+                    <div class="font-medium" th:text="${expediente.estudiante.carnet}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Estudiante</div>
+                    <div class="font-medium" th:text="${expediente.estudiante.user.name + ' ' + expediente.estudiante.user.apellidos}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Carrera</div>
+                    <div class="font-medium" th:text="${expediente.carrera.nombre}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Oferta</div>
+                    <div class="font-medium" th:text="${expediente.oferta.nombre}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Fecha inicio</div>
+                    <div class="font-medium" th:text="${expediente.fechaInicio}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Fecha fin</div>
+                    <div class="font-medium" th:text="${expediente.fechaFin}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

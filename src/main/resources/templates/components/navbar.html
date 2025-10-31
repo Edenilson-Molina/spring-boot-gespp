@@ -1,0 +1,42 @@
+<div th:fragment="navbar(path)">
+    <nav class="bg-white border-b">
+        <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <!-- Left: Brand + mobile menu button -->
+                <div class="flex items-center gap-3">
+                    <button data-drawer-target="app-sidebar" data-drawer-toggle="app-sidebar" aria-controls="app-sidebar"
+                            class="lg:hidden inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none"
+                            type="button">
+                        <span class="sr-only">Abrir menú</span>
+                        <span class="material-icons-outlined !text-2xl">
+                            menu
+                        </span>
+                    </button>
+                    <a th:href="@{/}" class="flex items-center gap-1">
+                        <img th:src="@{/img/logo.png}" class="object-cover size-12" alt="GESPP Logo" />
+                        <span class="text-lg font-bold">GESPP</span>
+                    </a>
+                </div>
+
+                <!-- Center: Nav links (optional) -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a th:href="@{/}" class="text-sm font-medium text-gray-600 hover:text-gray-900" th:classappend="${path == '/'} ? ' text-gray-900 underline underline-offset-4'">Inicio</a>
+                    <a th:href="@{/admin/catalogo/carreras}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')" th:classappend="${#strings.startsWith(path, '/admin/catalogo/carreras')} ? ' text-gray-900 underline underline-offset-4'">Carreras</a>
+                    <a th:href="@{/admin/catalogo/empresas}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')" th:classappend="${#strings.startsWith(path, '/admin/catalogo/empresas')} ? ' text-gray-900 underline underline-offset-4'">Empresas</a>
+                </div>
+
+                <!-- Right: Auth actions -->
+                <div class="flex items-center gap-2" sec:authorize="isAuthenticated()">
+                    <!-- Authenticated user -->
+                    <div class="flex flex-col items-end">
+                        <span class="hidden sm:block text-sm font-medium text-gray-600">Bienvenido,</span>
+                        <span class="hidden sm:block text-sm text-gray-600" sec:authentication="name"></span>
+                    </div>
+                    <span class="material-icons-outlined text-gray-600 !text-3xl">
+                        account_circle
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>

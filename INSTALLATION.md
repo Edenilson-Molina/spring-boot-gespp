@@ -95,10 +95,16 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.OracleDialect
 Ajusta las credenciales si usaste otras.
 
 ## 7) Construir y ejecutar la aplicación
+Generar css con Tailwind:
+```powershell
+# Navegar a la carpeta frontend
+npm i
+npm run build
+```
+
 Con Maven global:
 
 ```powershell
-npm run build
 mvn clean instal
 mvn spring-boot:run
 ```

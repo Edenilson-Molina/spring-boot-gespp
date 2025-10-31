@@ -1,0 +1,49 @@
+<div th:replace="~{components/base :: layout(~{::content})}">
+    <div th:fragment="content" class="container mx-auto p-6 max-w-3xl">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Nuevo Expediente</h1>
+            <p class="mt-1 text-sm text-gray-600">Complete la información para registrar el expediente</p>
+        </div>
+
+        <div class="rounded-lg border bg-white p-6 shadow-sm">
+            <form th:action="@{/expediente}" th:object="${expediente}" method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Carrera</label>
+                    <select th:field="*{carreraId}" class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm">
+                        <option value="" disabled selected>Seleccione...</option>
+                        <option th:each="c : ${carreras}" th:value="${c.id}" th:text="${c.nombre}"></option>
+                    </select>
+                    <p class="text-sm text-red-600" th:if="${#fields.hasErrors('carreraId')}" th:errors="*{carreraId}"></p>
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Oferta</label>
+                    <select th:field="*{ofertaId}" class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm">
+                        <option value="" disabled selected>Seleccione...</option>
+                        <option th:each="o : ${ofertas}" th:value="${o.id}" th:text="${o.nombre}"></option>
+                    </select>
+                    <p class="text-sm text-red-600" th:if="${#fields.hasErrors('ofertaId')}" th:errors="*{ofertaId}"></p>
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Fecha Inicio</label>
+                    <input th:field="*{fechaInicio}" type="date" class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm">
+                    <p class="text-sm text-red-600" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></p>
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Fecha Fin</label>
+                    <input th:field="*{fechaFin}" type="date" class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm">
+                    <p class="text-sm text-red-600" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></p>
+                </div>
+
+                <div class="md:col-span-2 flex justify-end mt-2">
+                    <a th:href="@{/}" class="mr-3 inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancelar</a>
+                    <button type="submit" class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Crear expediente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

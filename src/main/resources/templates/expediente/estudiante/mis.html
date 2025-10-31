@@ -1,0 +1,38 @@
+<div th:replace="~{components/base :: layout(~{::content})}">
+    <div th:fragment="content" class="container mx-auto p-6 max-w-6xl">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Mis expedientes</h1>
+                <p class="mt-1 text-sm text-gray-600">Revisa el estado de tus prácticas y posiciones</p>
+            </div>
+            <a th:href="@{/expediente/nuevo}"
+               class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Crear expediente</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(expedientes)}" class="rounded-lg border bg-white p-8 text-center text-gray-600">
+            Aún no tienes expedientes. Crea el primero.
+        </div>
+
+        <div th:if="${!#lists.isEmpty(expedientes)}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="e : ${expedientes}" class="rounded-lg border bg-white shadow-sm overflow-hidden">
+                <div class="p-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-lg font-semibold text-gray-800" th:text="${e.carrera.nombre}">Carrera</h2>
+                        <span class="text-xs px-2 py-1 rounded-full"
+                              th:classappend="${e.estado=='Registrado'?'bg-blue-100 text-blue-700':
+                                               e.estado=='En curso'?'bg-green-100 text-green-700':
+                                               e.estado=='Suspendido'?'bg-yellow-100 text-yellow-800':
+                                               e.estado=='Finalizado'?'bg-gray-200 text-gray-700':'bg-red-100 text-red-700'}"
+                              th:text="${e.estado}">Estado</span>
+                    </div>
+                    <p class="text-sm text-gray-600"><span class="font-medium">Oferta:</span> <span th:text="${e.oferta.nombre}"></span></p>
+                    <p class="text-sm text-gray-600"><span class="font-medium">Periodo:</span> <span th:text="${e.fechaInicio}"></span> - <span th:text="${e.fechaFin}"></span></p>
+                </div>
+                <div class="bg-gray-50 p-4 flex justify-between items-center">
+                    <a th:href="@{'/expediente/detalle/' + ${e.id}}" class="text-blue-600 hover:underline">Ver detalle</a>
+                    <span th:text="${e.activo ? 'Activo' : 'Inactivo'}" class="text-xs text-gray-500"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

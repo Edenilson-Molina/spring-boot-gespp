@@ -1,0 +1,42 @@
+<div th:replace="~{components/base :: layout(~{::content})}">
+    <div th:fragment="content" class="container mx-auto p-6">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Expedientes</h1>
+            <p class="mt-1 text-sm text-gray-600">Listado de expedientes de estudiantes</p>
+        </div>
+
+        <div class="overflow-hidden rounded-lg border bg-white shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600">
+                    <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                        <tr>
+                            <th class="px-6 py-3">ID</th>
+                            <th class="px-6 py-3">Carnet</th>
+                            <th class="px-6 py-3">Nombre</th>
+                            <th class="px-6 py-3">Apellidos</th>
+                            <th class="px-6 py-3">Carrera</th>
+                            <th class="px-6 py-3">Estado</th>
+                            <th class="px-6 py-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e : ${expedientes}" class="border-t hover:bg-gray-50">
+                            <td class="px-6 py-3" th:text="${e.id}"></td>
+                            <td class="px-6 py-3" th:text="${e.estudiante.carnet}"></td>
+                            <td class="px-6 py-3" th:text="${e.estudiante.user.name}"></td>
+                            <td class="px-6 py-3" th:text="${e.estudiante.user.apellidos}"></td>
+                            <td class="px-6 py-3" th:text="${e.carrera.nombre}"></td>
+                            <td class="px-6 py-3" th:text="${e.estado}"></td>
+                            <td class="px-6 py-3">
+                                <a th:href="@{'/admin/expedientes/' + ${e.id} + '/editar'}" class="inline-flex rounded-lg bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700">Editar</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(expedientes)}">
+                            <td class="px-6 py-3 text-center text-gray-500" colspan="7">No hay expedientes registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

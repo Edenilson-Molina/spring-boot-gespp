@@ -1,42 +1,32 @@
-<!DOCTYPE html>
-<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Spring MVC Template</title>
-    <link th:href="@{/css/output.css}" rel="stylesheet">
-</head>
-<body class="bg-gray-100 font-sans">
-<div class="container mx-auto p-6">
-    <h1 class="text-3xl font-bold text-blue-600 mb-4">Lista de Usuarios</h1>
-    <div sec:authorize="hasRole('ADMIN')">
-        <button class="bg-red-500 text-white p-2 rounded">Admin Only</button>
-    </div>
-    <!-- Formulario para agregar usuario -->
-    <form th:action="@{/user}" method="post" class="mb-6">
-        <div class="flex flex-col gap-4 max-w-md">
-            <input type="text" name="name" placeholder="Nombre" class="p-2 border rounded">
-            <input type="email" name="email" placeholder="Email" class="p-2 border rounded">
-            <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Agregar</button>
-        </div>
-    </form>
+<!-- Usa la plantilla base con slot de contenido -->
+<div th:replace="~{components/base :: layout(~{::content})}"
+     xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <div th:fragment="content" class="flex flex-1">
+        <div class="flex flex-col flex-1 mx-auto max-w-screen-2xl">
+            <div class="mb-6 flex items-center justify-end">
+                <div class="flex items-center gap-3">
+                    <a sec:authorize="hasRole('ROLE_ESTUDIANTE')" th:href="@{/expediente/nuevo}"
+                       class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                       <span class="material-icons-outlined mr-1">add</span>
+                       Crear expediente
+                    </a>
+                    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/expedientes}"
+                       class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                       <span class="material-icons-outlined mr-1">visibility</span>
+                       Ver expedientes
+                    </a>
+                    <a sec:authorize="hasRole('ROLE_ESTUDIANTE')" th:href="@{/expediente/mis}" 
+                       class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                       <span class="material-icons-outlined mr-1">assignment</span>
+                       Mis expedientes
+                    </a>
+                </div>
+            </div>
 
-    <!-- Lista de usuarios -->
-    <table class="w-full border-collapse border">
-        <thead>
-        <tr class="bg-gray-200">
-            <th class="border p-2">ID</th>
-            <th class="border p-2">Nombre</th>
-            <th class="border p-2">Email</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-            <td class="border p-2" th:text="${user.id}"></td>
-            <td class="border p-2" th:text="${user.name}"></td>
-            <td class="border p-2" th:text="${user.email}"></td>
-        </tr>
-        </tbody>
-    </table>
+            <div class="flex flex-col flex-1 justify-center items-center">
+                <h1 class="text-xl sm:text-2xl md:text-3xl xl:4xl font-bold text-center">Sistema para la gestión de prácticas profesionales</h1>
+                <img th:src="@{/img/svg/Calculator-bro.svg}" alt="Imagen ilustrativa" class="mx-auto size-96 md:size-[30rem]" />
+            </div>
+        </div>
+    </div>
 </div>
-</body>
-</html>

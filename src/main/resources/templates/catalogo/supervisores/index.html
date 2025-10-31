@@ -1,0 +1,69 @@
+<div th:replace="~{components/base :: layout(~{::content})}">
+    <div th:fragment="content" class="container mx-auto p-6">
+        <div class="mb-12 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Mantenimiento de Supervisores</h1>
+                <p class="mt-1 text-sm text-gray-600">Administración de supervisores por empresa</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a th:href="@{/admin/catalogo/empresas}"
+                   class="inline-flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <span class="material-icons-outlined mr-1">business</span>
+                    Empresas
+                </a>
+                <a th:href="@{/admin/catalogo/supervisores/nuevo}"
+                   class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                    <span class="material-icons-outlined mr-1">add</span>
+                    Nuevo Supervisor
+                </a>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4 p-3 rounded-lg bg-green-100 text-green-800" th:if="${success}">
+            <span class="material-icons-outlined mr-1">check_circle</span>
+            <p th:text="${success}"></p>
+        </div>
+
+        <div class="overflow-hidden rounded-lg border bg-white shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600">
+                    <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                        <tr>
+                            <th class="px-6 py-3">ID</th>
+                            <th class="px-6 py-3">Nombre</th>
+                            <th class="px-6 py-3">Apellido</th>
+                            <th class="px-6 py-3">Empresa</th>
+                            <th class="px-6 py-3">Activo</th>
+                            <th class="px-6 py-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${supervisores}" class="border-t hover:bg-gray-50">
+                            <td class="px-6 py-3" th:text="${s.id}"></td>
+                            <td class="px-6 py-3" th:text="${s.nombre}"></td>
+                            <td class="px-6 py-3" th:text="${s.apellido}"></td>
+                            <td class="px-6 py-3" th:text="${s.empresa.nombre}"></td>
+                            <td class="px-6 py-3">
+                                <span th:if="${s.activo}" class="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Sí</span>
+                                <span th:if="${!s.activo}" class="inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">No</span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="flex items-center gap-2">
+                                    <a th:href="@{'/admin/catalogo/supervisores/' + ${s.id} + '/editar'}"
+                                       class="inline-flex rounded-lg bg-yellow-500 px-3 py-1 text-sm font-medium text-white hover:bg-yellow-600">Editar</a>
+                                    <form th:action="@{'/admin/catalogo/supervisores/' + ${s.id} + '/eliminar'}" method="post" onsubmit="return confirm('¿Eliminar supervisor?');" class="m-0">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="inline-flex rounded-lg bg-red-600 px-3 py-1 text-sm font-medium text-white hover:bg-red-700">Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(supervisores)}">
+                            <td class="px-6 py-3 text-center text-gray-500" colspan="6">No hay supervisores registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
