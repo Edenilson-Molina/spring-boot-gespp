@@ -1,4 +1,4 @@
-<div th:fragment="navbar">
+<div th:fragment="navbar(path)">
     <nav class="bg-white border-b">
         <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
@@ -20,9 +20,9 @@
 
                 <!-- Center: Nav links (optional) -->
                 <div class="hidden md:flex items-center gap-6">
-                    <a th:href="@{/}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Inicio</a>
-                    <a th:href="@{/admin/catalogo/carreras}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')">Carreras</a>
-                    <a th:href="@{/admin/catalogo/empresas}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')">Empresas</a>
+                    <a th:href="@{/}" class="text-sm font-medium text-gray-600 hover:text-gray-900" th:classappend="${path == '/'} ? ' text-gray-900 underline underline-offset-4'">Inicio</a>
+                    <a th:href="@{/admin/catalogo/carreras}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')" th:classappend="${#strings.startsWith(path, '/admin/catalogo/carreras')} ? ' text-gray-900 underline underline-offset-4'">Carreras</a>
+                    <a th:href="@{/admin/catalogo/empresas}" class="text-sm font-medium text-gray-600 hover:text-gray-900" sec:authorize="hasRole('ROLE_ADMIN')" th:classappend="${#strings.startsWith(path, '/admin/catalogo/empresas')} ? ' text-gray-900 underline underline-offset-4'">Empresas</a>
                 </div>
 
                 <!-- Right: Auth actions -->

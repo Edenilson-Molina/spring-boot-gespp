@@ -1,44 +1,50 @@
-<div th:fragment="sidebar" id="app-sidebar" class="flex flex-col h-full overflow-y-auto p-4 shadow-lg">
+<div th:fragment="sidebar(path)" id="app-sidebar" class="flex flex-col h-full overflow-y-auto p-4 shadow-lg">
     <nav class="flex-1 space-y-4">
         <div class="space-y-1">
             <h2 class="px-2 text-xs font-semibold uppercase tracking-wider text-gray-500" sec:authorize="hasRole('ROLE_ADMIN')">Catálogos</h2>
-            <div class="hover:border-l-4 hover:pl-1 hover:border-blue-500 transition-all duration-150">
+            <div class="transition-all duration-150 hover:border-l-4 hover:pl-1 hover:border-blue-500" th:classappend="${#strings.startsWith(path, '/admin/catalogo/carreras')} ? ' border-l-4 pl-1 border-blue-600'">
                 <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/carreras}"
-                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                   th:classappend="${#strings.startsWith(path, '/admin/catalogo/carreras')} ? ' bg-gray-100 text-gray-900'">
                     <span class="material-icons-outlined mr-2">school</span>
                     Carreras universitarias
                 </a>
             </div>
-            <div class="hover:border-l-4 hover:pl-1 hover:border-blue-500 transition-all duration-150">
+            <div class="transition-all duration-150 hover:border-l-4 hover:pl-1 hover:border-blue-500" th:classappend="${#strings.startsWith(path, '/admin/catalogo/empresas')} ? ' border-l-4 pl-1 border-blue-600'">
                 <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/empresas}"
-                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                   th:classappend="${#strings.startsWith(path, '/admin/catalogo/empresas')} ? ' bg-gray-100 text-gray-900'">
                     <span class="material-icons-outlined mr-2">business</span> Empresas ofertantes
                 </a>
             </div>
-            <div class="hover:border-l-4 hover:pl-1 hover:border-blue-500 transition-all duration-150">
+            <div class="transition-all duration-150 hover:border-l-4 hover:pl-1 hover:border-blue-500" th:classappend="${#strings.startsWith(path, '/admin/catalogo/supervisores')} ? ' border-l-4 pl-1 border-blue-600'">
                 <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/supervisores}"
-                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                   th:classappend="${#strings.startsWith(path, '/admin/catalogo/supervisores')} ? ' bg-gray-100 text-gray-900'">
                     <span class="material-icons-outlined mr-2">supervisor_account</span> Supervisores
                 </a>
             </div>
-            <div class="hover:border-l-4 hover:pl-1 hover:border-blue-500 transition-all duration-150">
+            <div class="transition-all duration-150 hover:border-l-4 hover:pl-1 hover:border-blue-500" th:classappend="${#strings.startsWith(path, '/admin/catalogo/ofertas')} ? ' border-l-4 pl-1 border-blue-600'">
                 <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/ofertas}"
-                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                   th:classappend="${#strings.startsWith(path, '/admin/catalogo/ofertas')} ? ' bg-gray-100 text-gray-900'">
                 <span class="material-icons-outlined mr-2">business_center</span> Ofertas
             </a>
         </div>
 
         <div class="space-y-1">
             <h2 class="px-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Expediente</h2>
-            <div class="hover:border-l-4 hover:pl-1 hover:border-green-500 transition-all duration-150">
+            <div class="transition-all duration-150 hover:border-l-4 hover:pl-1 hover:border-green-500" th:classappend="${#strings.startsWith(path, '/expediente')} ? ' border-l-4 pl-1 border-green-600'">
                 <a sec:authorize="hasRole('ROLE_ESTUDIANTE')" th:href="@{/expediente/nuevo}"
-                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                   th:classappend="${#strings.startsWith(path, '/expediente')} ? ' bg-gray-100 text-gray-900'">
                     <span class="material-icons-outlined mr-2">add</span> Crear expediente
                 </a>
             </div>
-            <div class="hover:border-l-4 hover:pl-1 hover:border-green-500 transition-all duration-150">
+            <div class="transition-all duration-150 hover:border-l-4 hover:pl-1 hover:border-green-500" th:classappend="${#strings.startsWith(path, '/admin/expedientes')} ? ' border-l-4 pl-1 border-green-600'">
                 <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/expedientes}"
-                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                   class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                   th:classappend="${#strings.startsWith(path, '/admin/expedientes')} ? ' bg-gray-100 text-gray-900'">
                     <span class="material-icons-outlined mr-2">description</span> Ver expedientes
                 </a>
             </div>

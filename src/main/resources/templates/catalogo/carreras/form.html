@@ -1,45 +1,40 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${carrera.id} != null ? 'Editar Carrera' : 'Nueva Carrera'"></title>
-    <link th:href="@{/css/output.css}" rel="stylesheet">
-</head>
-<body class="bg-gray-100 font-sans">
-<div class="container mx-auto p-6 max-w-2xl">
-    <h1 class="text-3xl font-bold text-blue-600 mb-6" th:text="${carrera.id} != null ? 'Editar Carrera' : 'Nueva Carrera'"></h1>
-
-    <form th:object="${carrera}"
-        th:action="${carrera.id} != null ? @{'/admin/catalogo/carreras/' + ${carrera.id}} : @{/admin/catalogo/carreras}"
-        method="post" class="bg-white rounded shadow p-6 flex flex-col gap-4">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-        <div>
-         <label class="block text-sm font-medium text-gray-600 mb-1">Nombre *</label>
-         <input type="text" th:field="*{nombre}"
-                   class="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500" required>
-         <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+<div th:replace="~{components/base :: layout(~{::content})}">
+    <div th:fragment="content" class="container mx-auto p-6 max-w-2xl">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900" th:text="${carrera.id} != null ? 'Editar Carrera' : 'Nueva Carrera'"></h1>
+            <p class="mt-1 text-sm text-gray-600">Los campos marcados con * son obligatorios</p>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-600 mb-1">Facultad *</label>
-            <select th:field="*{facultad.id}" class="w-full p-2 border rounded">
-                <option value="" disabled th:selected="${carrera.facultad} == null">-- Seleccione --</option>
-                <option th:each="fac : ${facultades}" th:value="${fac.id}" th:text="${fac.nombre}"></option>
-            </select>
-            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('facultad')}" th:errors="*{facultad}"></p>
-        </div>
+        <form th:object="${carrera}"
+              th:action="${carrera.id} != null ? @{'/admin/catalogo/carreras/' + ${carrera.id}} : @{/admin/catalogo/carreras}"
+              method="post" class="rounded-lg border bg-white p-6 shadow-sm flex flex-col gap-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-        <div class="flex items-center gap-2" th:if="${carrera.id} != null">
-            <input type="checkbox" th:field="*{activo}" class="h-4 w-4">
-            <label class="text-sm text-gray-700">Activo</label>
-        </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-700">Nombre *</label>
+                <input type="text" th:field="*{nombre}"
+                       class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" required>
+                <p class="mt-1 text-sm text-red-600" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+            </div>
 
-        <div class="flex gap-2 justify-end">
-            <a th:href="@{/admin/catalogo/carreras}" class="px-4 py-2 rounded border">Cancelar</a>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar</button>
-        </div>
-    </form>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-700">Facultad *</label>
+                <select th:field="*{facultad.id}" class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm">
+                    <option value="" disabled th:selected="${carrera.facultad} == null">-- Seleccione --</option>
+                    <option th:each="fac : ${facultades}" th:value="${fac.id}" th:text="${fac.nombre}"></option>
+                </select>
+                <p class="mt-1 text-sm text-red-600" th:if="${#fields.hasErrors('facultad')}" th:errors="*{facultad}"></p>
+            </div>
+
+            <div class="flex items-center gap-2" th:if="${carrera.id} != null">
+                <input type="checkbox" th:field="*{activo}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <label class="text-sm text-gray-700">Activo</label>
+            </div>
+
+            <div class="flex gap-2 justify-end">
+                <a th:href="@{/admin/catalogo/carreras}" class="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancelar</a>
+                <button type="submit" class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Guardar</button>
+            </div>
+        </form>
+    </div>
 </div>
-</body>
-</html>

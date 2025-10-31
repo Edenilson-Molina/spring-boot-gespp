@@ -12,13 +12,13 @@
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-900">
     <!-- Navbar -->
-    <div th:replace="~{components/navbar :: navbar}"></div>
+    <div th:replace="~{components/navbar :: navbar(${path})}"></div>
 
     <!-- Contenido con sidebar -->
     <div class="flex flex-1 w-full max-w-screen-2xl mx-auto">
         <!-- Sidebar (oculta en pantallas pequeñas) -->
         <aside class="hidden lg:block w-64 shrink-0 border-r bg-white">
-            <div th:replace="~{components/sidebar :: sidebar}"></div>
+            <div th:replace="~{components/sidebar :: sidebar(${path})}"></div>
         </aside>
 
         <!-- Área principal -->
