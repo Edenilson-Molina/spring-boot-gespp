@@ -1,13 +1,9 @@
 <!-- Usa la plantilla base con slot de contenido -->
 <div th:replace="~{components/base :: layout(~{::content})}"
      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-    <div th:fragment="content">
-        <div class="mx-auto max-w-screen-2xl">
-            <div class="mb-6 flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-gray-900">Lista de usuarios</h1>
-                    <p class="mt-1 text-sm text-gray-600">Administra usuarios y accesos</p>
-                </div>
+    <div th:fragment="content" class="flex flex-1">
+        <div class="flex flex-col flex-1 mx-auto max-w-screen-2xl">
+            <div class="mb-6 flex items-center justify-end">
                 <div class="flex items-center gap-3">
                     <a sec:authorize="hasRole('ROLE_ESTUDIANTE')" th:href="@{/expediente/nuevo}"
                        class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">Crear expediente</a>
@@ -16,83 +12,9 @@
                 </div>
             </div>
 
-            <!-- DEBUG de autenticación -->
-            <div class="mb-6" sec:authorize="isAuthenticated()">
-                <div class="flex items-center rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
-                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 18a9 9 0 110-18 9 9 0 010 18z"/></svg>
-                    <div>
-                        Autenticado como <strong sec:authentication="name"></strong> — Roles: <span sec:authentication="principal.authorities"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Formulario -->
-            <div class="mb-6 rounded-lg border bg-white p-4 shadow-sm">
-                <h2 class="mb-4 text-base font-semibold text-gray-900">Agregar usuario</h2>
-                <form th:action="@{/user}" method="post" class="grid max-w-xl grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div class="sm:col-span-1">
-                        <label for="name" class="mb-1 block text-sm font-medium text-gray-700">Nombre</label>
-                        <input id="name" type="text" name="name" placeholder="Nombre"
-                               class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"/>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <label for="email" class="mb-1 block text-sm font-medium text-gray-700">Email</label>
-                        <input id="email" type="email" name="email" placeholder="email@dominio.com"
-                               class="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"/>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <button type="submit" class="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 sm:w-auto">Agregar</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Tabla de usuarios -->
-            <div class="overflow-hidden rounded-lg border bg-white shadow-sm">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-gray-600">
-                        <thead class="bg-gray-50 text-xs uppercase text-gray-500">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
-                            <th scope="col" class="px-6 py-3">Nombre</th>
-                            <th scope="col" class="px-6 py-3">Email</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="user : ${users}" class="border-t hover:bg-gray-50">
-                            <td class="px-6 py-3" th:text="${user.id}"></td>
-                            <td class="px-6 py-3" th:text="${user.name}"></td>
-                            <td class="px-6 py-3" th:text="${user.email}"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Enlaces de Catálogo -->
-            <div class="mt-8 rounded-lg border bg-white p-4 shadow-sm">
-                <h2 class="mb-3 text-base font-semibold text-gray-900">Catálogos</h2>
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/carreras}"
-                       class="group rounded-lg border p-3 hover:bg-gray-50">
-                        <div class="text-sm font-medium text-gray-900 group-hover:text-blue-700">Mantenimiento de Carreras</div>
-                        <div class="text-xs text-gray-500">Crear, editar y eliminar</div>
-                    </a>
-                    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/empresas}"
-                       class="group rounded-lg border p-3 hover:bg-gray-50">
-                        <div class="text-sm font-medium text-gray-900 group-hover:text-blue-700">Mantenimiento de Empresas</div>
-                        <div class="text-xs text-gray-500">Crear, editar y eliminar</div>
-                    </a>
-                    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/supervisores}"
-                       class="group rounded-lg border p-3 hover:bg-gray-50">
-                        <div class="text-sm font-medium text-gray-900 group-hover:text-blue-700">Mantenimiento de Supervisores</div>
-                        <div class="text-xs text-gray-500">Crear, editar y eliminar</div>
-                    </a>
-                    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/catalogo/ofertas}"
-                       class="group rounded-lg border p-3 hover:bg-gray-50">
-                        <div class="text-sm font-medium text-gray-900 group-hover:text-blue-700">Mantenimiento de Ofertas</div>
-                        <div class="text-xs text-gray-500">Crear, editar y eliminar</div>
-                    </a>
-                </div>
+            <div class="flex flex-col flex-1 justify-center items-center">
+                <h1 class="text-xl sm:text-2xl md:text-3xl xl:4xl font-bold text-center">Sistema para la gestión de prácticas profesionales</h1>
+                <img th:src="@{/img/svg/Calculator-bro.svg}" alt="Imagen ilustrativa" class="mx-auto size-96 md:size-[30rem]" />
             </div>
         </div>
     </div>
