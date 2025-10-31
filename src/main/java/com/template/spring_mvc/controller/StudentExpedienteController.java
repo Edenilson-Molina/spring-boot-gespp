@@ -26,15 +26,18 @@ public class StudentExpedienteController {
     private final EstudianteService estudianteService;
     private final CarreraService carreraService;
     private final OfertaService ofertaService;
+    private final InformeService informeService;
 
     public StudentExpedienteController(ExpedienteService expedienteService,
                                        EstudianteService estudianteService,
                                        CarreraService carreraService,
-                                       OfertaService ofertaService) {
+                                       OfertaService ofertaService,
+                                       InformeService informeService) {
         this.expedienteService = expedienteService;
         this.estudianteService = estudianteService;
         this.carreraService = carreraService;
         this.ofertaService = ofertaService;
+        this.informeService = informeService;
     }
 
     @PreAuthorize("hasRole('ESTUDIANTE')")
@@ -89,18 +92,18 @@ public class StudentExpedienteController {
         Oferta oferta = ofertaService.findById(dto.getOfertaId())
                 .orElseThrow(() -> new IllegalArgumentException("Oferta no encontrada"));
 
-    // Regla: un estudiante no puede tener dos expedientes con la misma carrera
-    if (expedienteService.existsByEstudianteAndCarrera(estudiante.getId(), carrera.getId())) {
-        result.addError(new FieldError("expediente", "carreraId", "Ya tienes un expediente para esta carrera"));
-        model.addAttribute("carreras", carreraService.findAll());
-        List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
-            .filter(o -> o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
-            .collect(java.util.stream.Collectors.toList());
-        model.addAttribute("ofertas", ofertasConCupo);
-        return "expediente/form";
-    }
+        // Regla: un estudiante no puede tener dos expedientes con la misma carrera
+        if (expedienteService.existsByEstudianteAndCarrera(estudiante.getId(), carrera.getId())) {
+            result.addError(new FieldError("expediente", "carreraId", "Ya tienes un expediente para esta carrera"));
+            model.addAttribute("carreras", carreraService.findAll());
+            List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
+                .filter(o -> o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+                .collect(java.util.stream.Collectors.toList());
+            model.addAttribute("ofertas", ofertasConCupo);
+            return "expediente/form";
+        }
 
-    // Verificar cupo disponible y actualizar ocupados
+        // Verificar cupo disponible y actualizar ocupados
         Integer ocupados = oferta.getOcupados() == null ? 0 : oferta.getOcupados();
         Integer vacantes = oferta.getVacantes() == null ? 0 : oferta.getVacantes();
         if (ocupados + 1 > vacantes) {
@@ -122,7 +125,7 @@ public class StudentExpedienteController {
         expediente.setEstado("Registrado");
         expediente.setActivo(true);
 
-    // Persistir cambios: primero actualizar oferta y luego el expediente
+        // Persistir cambios: primero actualizar oferta y luego el expediente
         oferta.setOcupados(ocupados + 1);
         ofertaService.save(oferta);
         expediente = expedienteService.save(expediente);
@@ -154,7 +157,14 @@ public class StudentExpedienteController {
         if (!expediente.getEstudiante().getUser().getEmail().equalsIgnoreCase(principal.getUsername())) {
             return "access-denied";
         }
+        // Sincroniza registros faltantes si hay archivos en disco
+        try { informeService.syncMissingFromFilesystem(expediente, java.nio.file.Path.of("uploads")); } catch (Exception ignore) {}
         model.addAttribute("expediente", expediente);
+        // Meses esperados y mapa de informes existentes
+        java.util.List<String> meses = InformeService.mesesEntre(expediente.getFechaInicio(), expediente.getFechaFin());
+        java.util.Map<String, com.template.spring_mvc.model.Informe> informes = informeService.mapByMes(expediente.getId());
+        model.addAttribute("meses", meses);
+        model.addAttribute("informes", informes);
         return "expediente/estudiante/show";
     }
 
@@ -165,5 +175,37 @@ public class StudentExpedienteController {
                 .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
         model.addAttribute("expediente", expediente);
         return "expediente/show";
+    }
+
+    @PreAuthorize("hasRole('ESTUDIANTE')")
+    @PostMapping("/{id}/informes/{mes}/upload")
+    @Transactional
+    public String subirInforme(@PathVariable Long id,
+                               @PathVariable String mes,
+                               @RequestParam("file") org.springframework.web.multipart.MultipartFile file,
+                               @AuthenticationPrincipal UserDetails principal,
+                               RedirectAttributes ra) {
+        Expediente expediente = expedienteService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
+        if (!expediente.getEstudiante().getUser().getEmail().equalsIgnoreCase(principal.getUsername())) {
+            return "access-denied";
+        }
+        if (file == null || file.isEmpty()) {
+            ra.addFlashAttribute("error", "Debes seleccionar un archivo PDF");
+            return "redirect:/expediente/detalle/" + id;
+        }
+        String contentType = file.getContentType() == null ? "" : file.getContentType().toLowerCase();
+        if (!contentType.contains("pdf") && (file.getOriginalFilename() == null || !file.getOriginalFilename().toLowerCase().endsWith(".pdf"))) {
+            ra.addFlashAttribute("error", "El archivo debe ser un PDF");
+            return "redirect:/expediente/detalle/" + id;
+        }
+        try {
+            java.nio.file.Path baseUploads = java.nio.file.Path.of("uploads");
+            informeService.crearOReemplazarArchivo(expediente, mes, file.getOriginalFilename(), file.getBytes(), baseUploads);
+            ra.addFlashAttribute("success", "Informe subido correctamente y pendiente de verificación");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/expediente/detalle/" + id;
     }
 }

@@ -27,8 +27,9 @@
                             <td class="px-6 py-3" th:text="${e.estudiante.user.apellidos}"></td>
                             <td class="px-6 py-3" th:text="${e.carrera.nombre}"></td>
                             <td class="px-6 py-3" th:text="${e.estado}"></td>
-                            <td class="px-6 py-3">
+                            <td class="px-6 py-3 space-x-2">
                                 <a th:href="@{'/admin/expedientes/' + ${e.id} + '/editar'}" class="inline-flex rounded-lg bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700">Editar</a>
+                                <a th:href="@{'/admin/expedientes/' + ${e.id} + '/revision'}" class="inline-flex rounded-lg bg-purple-600 px-3 py-1 text-sm font-medium text-white hover:bg-purple-700">Revisar informes</a>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(expedientes)}">

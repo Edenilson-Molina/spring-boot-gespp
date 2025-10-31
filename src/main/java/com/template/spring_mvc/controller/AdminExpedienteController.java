@@ -1,8 +1,10 @@
 package com.template.spring_mvc.controller;
 
 import com.template.spring_mvc.model.Expediente;
+import com.template.spring_mvc.model.Informe;
 import com.template.spring_mvc.model.Oferta;
 import com.template.spring_mvc.service.ExpedienteService;
+import com.template.spring_mvc.service.InformeService;
 import com.template.spring_mvc.service.OfertaService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -24,10 +26,12 @@ public class AdminExpedienteController {
 
     private final ExpedienteService expedienteService;
     private final OfertaService ofertaService;
+    private final InformeService informeService;
 
-    public AdminExpedienteController(ExpedienteService expedienteService, OfertaService ofertaService) {
+    public AdminExpedienteController(ExpedienteService expedienteService, OfertaService ofertaService, InformeService informeService) {
         this.expedienteService = expedienteService;
         this.ofertaService = ofertaService;
+        this.informeService = informeService;
     }
 
     @GetMapping
@@ -103,5 +107,44 @@ public class AdminExpedienteController {
     }
     expedienteService.save(expediente);
         return "redirect:/admin/expedientes";
+    }
+
+    @GetMapping("/{id}/revision")
+    public String revisarInformes(@PathVariable Long id, Model model) {
+        Expediente expediente = expedienteService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
+        try { informeService.syncMissingFromFilesystem(expediente, java.nio.file.Path.of("uploads")); } catch (Exception ignore) {}
+        List<String> meses = InformeService.mesesEntre(expediente.getFechaInicio(), expediente.getFechaFin());
+        java.util.Map<String, Informe> informes = informeService.mapByMes(expediente.getId());
+        model.addAttribute("expediente", expediente);
+        model.addAttribute("meses", meses);
+        model.addAttribute("informes", informes);
+        return "expediente/revision";
+    }
+
+    // Debug endpoint: devuelve informes de un expediente en JSON
+    @GetMapping("/{id}/informes.json")
+    @ResponseBody
+    public java.util.List<Informe> informesJson(@PathVariable Long id) {
+        return informeService.findByExpediente(id);
+    }
+
+    @PostMapping("/{expedienteId}/informes/{informeId}/estado")
+    @Transactional
+    public String actualizarEstadoInforme(@PathVariable Long expedienteId,
+                                          @PathVariable Long informeId,
+                                          @RequestParam("estado") Informe.EstadoInforme estado,
+                                          @RequestParam(value = "comentario", required = false) String comentario,
+                                          Model model) {
+        Expediente expediente = expedienteService.findById(expedienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
+        Informe informe = informeService.findByExpediente(expedienteId).stream()
+                .filter(i -> i.getId().equals(informeId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Informe no encontrado"));
+        informe.setEstado(estado);
+        informe.setComentario(comentario);
+        informeService.save(informe);
+        return "redirect:/admin/expedientes/" + expedienteId + "/revision";
     }
 }

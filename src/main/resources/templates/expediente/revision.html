@@ -1,0 +1,79 @@
+<div th:replace="~{components/base :: layout(~{::content})}">
+    <div th:fragment="content" class="container mx-auto p-6 max-w-5xl">
+        <div class="mb-4">
+            <a th:href="@{/admin/expedientes}" class="text-blue-600 hover:underline">← Volver al listado</a>
+        </div>
+
+        <div class="rounded-lg border bg-white p-8 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Revisión de informes</h1>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="text-sm text-gray-500">Carnet</div>
+                    <div class="font-medium" th:text="${expediente.estudiante.carnet}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Estudiante</div>
+                    <div class="font-medium" th:text="${expediente.estudiante.user.name + ' ' + expediente.estudiante.user.apellidos}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Carrera</div>
+                    <div class="font-medium" th:text="${expediente.carrera.nombre}"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-500">Oferta</div>
+                    <div class="font-medium" th:text="${expediente.oferta.nombre}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 rounded-lg border bg-white p-8 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Informes mensuales</h2>
+            </div>
+
+            <div class="space-y-4">
+                <div th:each="m : ${meses}">
+                    <div class="rounded-lg border">
+                        <div class="flex items-center justify-between p-4">
+                            <div>
+                                <div class="text-sm text-gray-500">Mes</div>
+                                <div class="font-medium" th:text="${m}"></div>
+                            </div>
+                            <div th:if="${informes[m.toString()] != null}" class="flex items-center gap-3">
+                                <a class="inline-flex rounded-lg bg-gray-700 px-3 py-1 text-sm font-medium text-white hover:bg-gray-800" th:href="${informes[m.toString()].archivoPath}" target="_blank">Ver PDF</a>
+                                <span class="text-xs px-2 py-1 rounded-full" th:classappend="${informes[m.toString()].estado.name()=='PENDIENTE'?'bg-yellow-100 text-yellow-800':(informes[m.toString()].estado.name()=='APROBADO'?'bg-green-100 text-green-700':(informes[m.toString()].estado.name()=='RECHAZADO'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'))}" th:text="${informes[m.toString()].estado}"></span>
+                            </div>
+                            <div th:if="${informes[m.toString()] == null}" class="text-sm text-gray-500">Sin archivo</div>
+                        </div>
+                        <div class="border-t p-4">
+                            <div th:if="${informes[m.toString()] != null}">
+                                <form th:action="@{'/admin/expedientes/' + ${expediente.id} + '/informes/' + ${informes[m.toString()].id} + '/estado'}" method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                    <div>
+                                        <label class="block text-sm text-gray-600 mb-1">Estado</label>
+                                        <select name="estado" class="w-full rounded border-gray-300 text-sm">
+                                            <option th:selected="${informes[m.toString()].estado.name()=='PENDIENTE'}" value="PENDIENTE">Pendiente</option>
+                                            <option th:selected="${informes[m.toString()].estado.name()=='OBSERVADO'}" value="OBSERVADO">Observado</option>
+                                            <option th:selected="${informes[m.toString()].estado.name()=='RECHAZADO'}" value="RECHAZADO">Rechazado</option>
+                                            <option th:selected="${informes[m.toString()].estado.name()=='APROBADO'}" value="APROBADO">Aprobado</option>
+                                        </select>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm text-gray-600 mb-1">Comentario (opcional)</label>
+                                        <input type="text" name="comentario" th:value="${informes[m.toString()].comentario}" class="w-full rounded border-gray-300 text-sm" maxlength="500" placeholder="Escribe un comentario para el estudiante" />
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="inline-flex rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">Guardar</button>
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div th:if="${informes[m.toString()] == null}" class="text-xs text-gray-500">No hay archivo para este mes. El estudiante aún no lo ha subido.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
