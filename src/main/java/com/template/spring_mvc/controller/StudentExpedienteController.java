@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/expediente")
@@ -38,7 +39,14 @@ public class StudentExpedienteController {
 
     @PreAuthorize("hasRole('ESTUDIANTE')")
     @GetMapping("/nuevo")
-    public String nuevo(Model model) {
+    public String nuevo(@AuthenticationPrincipal UserDetails principal, Model model, RedirectAttributes ra) {
+        // Verifica que el usuario tenga registro de Estudiante
+        boolean tienePerfil = estudianteService.findByUserEmail(principal.getUsername()).isPresent();
+        if (!tienePerfil) {
+            ra.addFlashAttribute("error", "Debes completar tu registro de estudiante antes de crear expedientes.");
+            return "redirect:/registro/estudiante/registro";
+        }
+
         model.addAttribute("expediente", new ExpedienteCreateDto());
         model.addAttribute("carreras", carreraService.findAll());
         List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
@@ -54,7 +62,8 @@ public class StudentExpedienteController {
     public String crear(@Valid @ModelAttribute("expediente") ExpedienteCreateDto dto,
                         BindingResult result,
                         Model model,
-                        @AuthenticationPrincipal UserDetails principal) {
+                        @AuthenticationPrincipal UserDetails principal,
+                        RedirectAttributes ra) {
         if (dto.getFechaInicio() != null && dto.getFechaFin() != null && dto.getFechaFin().isBefore(dto.getFechaInicio())) {
             result.addError(new FieldError("expediente", "fechaFin", "La fecha fin no puede ser anterior a la fecha inicio"));
         }
@@ -68,26 +77,41 @@ public class StudentExpedienteController {
             return "expediente/form";
         }
 
-        Estudiante estudiante = estudianteService.findByUserEmail(principal.getUsername())
-                .orElseThrow(() -> new IllegalStateException("Estudiante no encontrado para el usuario actual"));
+        java.util.Optional<Estudiante> optEst = estudianteService.findByUserEmail(principal.getUsername());
+        if (optEst.isEmpty()) {
+            ra.addFlashAttribute("error", "Debes completar tu registro de estudiante antes de crear expedientes.");
+            return "redirect:/registro/estudiante/registro";
+        }
+        Estudiante estudiante = optEst.get();
 
         Carrera carrera = carreraService.findById(dto.getCarreraId())
                 .orElseThrow(() -> new IllegalArgumentException("Carrera no encontrada"));
-    Oferta oferta = ofertaService.findById(dto.getOfertaId())
+        Oferta oferta = ofertaService.findById(dto.getOfertaId())
                 .orElseThrow(() -> new IllegalArgumentException("Oferta no encontrada"));
 
-    // Verificar cupo disponible y actualizar ocupados
-    Integer ocupados = oferta.getOcupados() == null ? 0 : oferta.getOcupados();
-    Integer vacantes = oferta.getVacantes() == null ? 0 : oferta.getVacantes();
-    if (ocupados + 1 > vacantes) {
-        result.addError(new FieldError("expediente", "ofertaId", "La oferta seleccionada no tiene cupo disponible"));
+    // Regla: un estudiante no puede tener dos expedientes con la misma carrera
+    if (expedienteService.existsByEstudianteAndCarrera(estudiante.getId(), carrera.getId())) {
+        result.addError(new FieldError("expediente", "carreraId", "Ya tienes un expediente para esta carrera"));
         model.addAttribute("carreras", carreraService.findAll());
         List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
             .filter(o -> o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
-            .collect(Collectors.toList());
+            .collect(java.util.stream.Collectors.toList());
         model.addAttribute("ofertas", ofertasConCupo);
         return "expediente/form";
     }
+
+    // Verificar cupo disponible y actualizar ocupados
+        Integer ocupados = oferta.getOcupados() == null ? 0 : oferta.getOcupados();
+        Integer vacantes = oferta.getVacantes() == null ? 0 : oferta.getVacantes();
+        if (ocupados + 1 > vacantes) {
+            result.addError(new FieldError("expediente", "ofertaId", "La oferta seleccionada no tiene cupo disponible"));
+            model.addAttribute("carreras", carreraService.findAll());
+            List<Oferta> ofertasConCupo = ofertaService.findAll().stream()
+                    .filter(o -> o.getOcupados() != null && o.getVacantes() != null && o.getOcupados() < o.getVacantes())
+                    .collect(Collectors.toList());
+            model.addAttribute("ofertas", ofertasConCupo);
+            return "expediente/form";
+        }
 
         Expediente expediente = new Expediente();
         expediente.setEstudiante(estudiante);
@@ -99,10 +123,39 @@ public class StudentExpedienteController {
         expediente.setActivo(true);
 
     // Persistir cambios: primero actualizar oferta y luego el expediente
-    oferta.setOcupados(ocupados + 1);
-    ofertaService.save(oferta);
+        oferta.setOcupados(ocupados + 1);
+        ofertaService.save(oferta);
         expediente = expedienteService.save(expediente);
         return "redirect:/expediente/" + expediente.getId();
+    }
+
+    @PreAuthorize("hasRole('ESTUDIANTE')")
+    @GetMapping("/mis")
+    public String misExpedientes(@AuthenticationPrincipal UserDetails principal, Model model, RedirectAttributes ra) {
+        java.util.Optional<Estudiante> optEst = estudianteService.findByUserEmail(principal.getUsername());
+        if (optEst.isEmpty()) {
+            ra.addFlashAttribute("error", "Debes completar tu registro de estudiante antes de crear expedientes.");
+            return "redirect:/registro/estudiante/registro";
+        }
+        Estudiante estudiante = optEst.get();
+        List<Expediente> expedientes = expedienteService.findByEstudianteId(estudiante.getId());
+        model.addAttribute("expedientes", expedientes);
+        return "expediente/estudiante/mis";
+    }
+
+    @PreAuthorize("hasRole('ESTUDIANTE')")
+    @GetMapping("/detalle/{id}")
+    public String verDetalleEstudiante(@PathVariable Long id,
+                                       @AuthenticationPrincipal UserDetails principal,
+                                       Model model) {
+        Expediente expediente = expedienteService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
+        // Propiedad: solo el dueño puede ver este detalle desde ruta de estudiante
+        if (!expediente.getEstudiante().getUser().getEmail().equalsIgnoreCase(principal.getUsername())) {
+            return "access-denied";
+        }
+        model.addAttribute("expediente", expediente);
+        return "expediente/estudiante/show";
     }
 
     @PreAuthorize("hasAnyRole('ESTUDIANTE','ADMIN')")

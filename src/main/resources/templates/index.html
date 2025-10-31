@@ -6,9 +6,20 @@
             <div class="mb-6 flex items-center justify-end">
                 <div class="flex items-center gap-3">
                     <a sec:authorize="hasRole('ROLE_ESTUDIANTE')" th:href="@{/expediente/nuevo}"
-                       class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">Crear expediente</a>
+                       class="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                       <span class="material-icons-outlined mr-1">add</span>
+                       Crear expediente
+                    </a>
                     <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/expedientes}"
-                       class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">Ver expedientes</a>
+                       class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                       <span class="material-icons-outlined mr-1">visibility</span>
+                       Ver expedientes
+                    </a>
+                    <a sec:authorize="hasRole('ROLE_ESTUDIANTE')" th:href="@{/expediente/mis}" 
+                       class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                       <span class="material-icons-outlined mr-1">assignment</span>
+                       Mis expedientes
+                    </a>
                 </div>
             </div>
 

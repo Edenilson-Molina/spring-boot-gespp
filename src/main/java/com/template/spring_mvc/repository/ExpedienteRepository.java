@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ExpedienteRepository extends JpaRepository<Expediente, Long> {
     List<Expediente> findByEstudianteId(Long estudianteId);
+    boolean existsByEstudianteIdAndCarreraId(Long estudianteId, Long carreraId);
 }

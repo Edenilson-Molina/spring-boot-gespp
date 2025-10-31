@@ -33,4 +33,9 @@ public class ExpedienteService {
     public List<Expediente> findByEstudianteId(Long estudianteId) {
         return expedienteRepository.findByEstudianteId(estudianteId);
     }
+
+    @Transactional(readOnly = true)
+    public boolean existsByEstudianteAndCarrera(Long estudianteId, Long carreraId) {
+        return expedienteRepository.existsByEstudianteIdAndCarreraId(estudianteId, carreraId);
+    }
 }
