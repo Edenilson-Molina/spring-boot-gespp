@@ -1,0 +1,88 @@
+<div th:replace="~{components/base :: layout(~{::content})}">
+  <div th:fragment="content" class="container mx-auto p-6 max-w-6xl">
+    <div class="mb-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900">Reportes</h1>
+      <a th:href="@{/admin/expedientes}" class="text-blue-600 hover:underline">← Volver</a>
+    </div>
+
+    <div class="rounded-lg border bg-white p-6 shadow-sm mb-6">
+      <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Fecha inicio</label>
+          <input type="date" name="start" th:value="${start}" class="w-full rounded border-gray-300 text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Fecha fin</label>
+          <input type="date" name="end" th:value="${end}" class="w-full rounded border-gray-300 text-sm" />
+        </div>
+        <div class="md:col-span-2 flex gap-3">
+          <button type="submit" class="inline-flex rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">Aplicar filtros</button>
+          <a th:href="@{'/admin/reportes/activos-por-empresa.csv'(start=${start}, end=${end})}" class="inline-flex rounded-lg bg-gray-700 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">Exportar CSV</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="rounded-lg border bg-white p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-900">Activos por empresa</h2>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <canvas id="chartActivosEmpresa" height="200"></canvas>
+        </div>
+        <div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left font-medium text-gray-600">Empresa</th>
+                  <th class="px-4 py-2 text-right font-medium text-gray-600">Activos</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr th:each="r : ${activosEmpresa}">
+                  <td class="px-4 py-2" th:text="${r.empresaNombre}"></td>
+                  <td class="px-4 py-2 text-right" th:text="${r.totalActivos}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(activosEmpresa)}">
+                  <td class="px-4 py-4 text-gray-500" colspan="2">No hay datos para el rango seleccionado.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+      const labels = [];
+      const values = [];
+      /*[# th:each="r : ${activosEmpresa}"]*/
+      labels.push(/*[[${r.empresaNombre}]]*/ "");
+      values.push(/*[[${r.totalActivos}]]*/ 0);
+      /*[/]*/
+      const ctx = document.getElementById('chartActivosEmpresa');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Activos (En curso) durante todo el rango',
+              data: values,
+              backgroundColor: 'rgba(37, 99, 235, 0.5)',
+              borderColor: 'rgb(37, 99, 235)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, precision: 0 } },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+    </script>
+  </div>
+</div>
