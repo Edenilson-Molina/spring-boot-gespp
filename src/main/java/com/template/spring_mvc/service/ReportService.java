@@ -4,6 +4,7 @@ import com.template.spring_mvc.dto.report.CarreraEstadoPivot;
 import com.template.spring_mvc.repository.ExpedienteRepository;
 import com.template.spring_mvc.repository.projection.ActivosEmpresaRow;
 import com.template.spring_mvc.repository.projection.CarreraEstadoRow;
+import com.template.spring_mvc.repository.projection.EmpresaEstadoRow;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -48,6 +49,18 @@ public class ReportService {
         for (CarreraEstadoRow r : rows) {
             CarreraEstadoPivot pivot = map.computeIfAbsent(r.getCarreraId(),
                     id -> new CarreraEstadoPivot(r.getCarreraId(), r.getCarreraNombre()));
+            pivot.add(r.getEstado(), r.getTotal());
+        }
+        return map.values().stream().collect(Collectors.toList());
+    }
+
+    public List<com.template.spring_mvc.dto.report.EmpresaEstadoPivot> porEmpresaYEstado(LocalDate start, LocalDate end) {
+        DateRange range = normalizeRange(start, end);
+        List<EmpresaEstadoRow> rows = expedienteRepository.countPorEmpresaYEstado(range.start(), range.end());
+        Map<Long, com.template.spring_mvc.dto.report.EmpresaEstadoPivot> map = new LinkedHashMap<>();
+        for (EmpresaEstadoRow r : rows) {
+            var pivot = map.computeIfAbsent(r.getEmpresaId(),
+                    id -> new com.template.spring_mvc.dto.report.EmpresaEstadoPivot(r.getEmpresaId(), r.getEmpresaNombre()));
             pivot.add(r.getEstado(), r.getTotal());
         }
         return map.values().stream().collect(Collectors.toList());

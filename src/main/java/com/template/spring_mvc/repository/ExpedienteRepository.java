@@ -3,6 +3,7 @@ package com.template.spring_mvc.repository;
 import com.template.spring_mvc.model.Expediente;
 import com.template.spring_mvc.repository.projection.ActivosEmpresaRow;
 import com.template.spring_mvc.repository.projection.CarreraEstadoRow;
+import com.template.spring_mvc.repository.projection.EmpresaEstadoRow;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,5 +44,22 @@ public interface ExpedienteRepository extends JpaRepository<Expediente, Long> {
             order by c.nombre asc, e.estado asc
         """)
         List<CarreraEstadoRow> countPorCarreraYEstado(@Param("start") LocalDate start,
+                                                                                                             @Param("end") LocalDate end);
+
+        @Query("""
+                select emp.id     as empresaId,
+                                emp.nombre as empresaNombre,
+                                e.estado   as estado,
+                                count(e)   as total
+                from Expediente e
+                join e.oferta o
+                join o.supervisor s
+                join s.empresa emp
+                where e.fechaInicio <= :start
+                    and e.fechaFin    >= :end
+                group by emp.id, emp.nombre, e.estado
+                order by emp.nombre asc, e.estado asc
+        """)
+        List<EmpresaEstadoRow> countPorEmpresaYEstado(@Param("start") LocalDate start,
                                                                                                              @Param("end") LocalDate end);
 }
