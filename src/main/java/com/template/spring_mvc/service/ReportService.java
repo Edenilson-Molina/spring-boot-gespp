@@ -1,11 +1,16 @@
 package com.template.spring_mvc.service;
 
+import com.template.spring_mvc.dto.report.CarreraEstadoPivot;
 import com.template.spring_mvc.repository.ExpedienteRepository;
 import com.template.spring_mvc.repository.projection.ActivosEmpresaRow;
+import com.template.spring_mvc.repository.projection.CarreraEstadoRow;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -34,5 +39,17 @@ public class ReportService {
     public List<ActivosEmpresaRow> activosPorEmpresa(LocalDate start, LocalDate end) {
         DateRange range = normalizeRange(start, end);
         return expedienteRepository.countActivosPorEmpresa(range.start(), range.end());
+    }
+
+    public List<CarreraEstadoPivot> porCarreraYEstado(LocalDate start, LocalDate end) {
+        DateRange range = normalizeRange(start, end);
+        List<CarreraEstadoRow> rows = expedienteRepository.countPorCarreraYEstado(range.start(), range.end());
+        Map<Long, CarreraEstadoPivot> map = new LinkedHashMap<>();
+        for (CarreraEstadoRow r : rows) {
+            CarreraEstadoPivot pivot = map.computeIfAbsent(r.getCarreraId(),
+                    id -> new CarreraEstadoPivot(r.getCarreraId(), r.getCarreraNombre()));
+            pivot.add(r.getEstado(), r.getTotal());
+        }
+        return map.values().stream().collect(Collectors.toList());
     }
 }
