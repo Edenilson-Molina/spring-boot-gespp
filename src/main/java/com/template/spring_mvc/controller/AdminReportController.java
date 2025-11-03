@@ -3,6 +3,7 @@ package com.template.spring_mvc.controller;
 import com.template.spring_mvc.dto.report.CarreraEstadoPivot;
 import com.template.spring_mvc.dto.report.EmpresaEstadoPivot;
 import com.template.spring_mvc.repository.projection.ActivosEmpresaRow;
+import com.template.spring_mvc.repository.projection.EstadoRow;
 import com.template.spring_mvc.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,11 +39,13 @@ public class AdminReportController {
         List<ActivosEmpresaRow> data = reportService.activosPorEmpresa(range.start(), range.end());
         List<CarreraEstadoPivot> porCarrera = reportService.porCarreraYEstado(range.start(), range.end());
         List<EmpresaEstadoPivot> porEmpresa = reportService.porEmpresaYEstado(range.start(), range.end());
+    List<EstadoRow> porEstado = reportService.porEstado(range.start(), range.end());
         model.addAttribute("start", range.start());
         model.addAttribute("end", range.end());
         model.addAttribute("activosEmpresa", data);
         model.addAttribute("porCarrera", porCarrera);
         model.addAttribute("porEmpresa", porEmpresa);
+        model.addAttribute("porEstado", porEstado);
         return "reportes/index";
     }
 
@@ -108,6 +111,28 @@ public class AdminReportController {
             for (EmpresaEstadoPivot r : rows) {
                 String empresa = r.getEmpresaNombre().replaceAll(",", " ");
                 writer.printf("%s,%d,%d,%d,%d,%d,%d%n", empresa, r.getRegistrados(), r.getEnCurso(), r.getSuspendidos(), r.getFinalizados(), r.getCancelados(), r.getTotal());
+            }
+        }
+    }
+
+    @GetMapping(value = "/estados.csv")
+    public void exportEstadosCsv(@RequestParam(value = "start", required = false)
+                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+                                 @RequestParam(value = "end", required = false)
+                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
+                                 HttpServletResponse response) throws IOException {
+        var range = reportService.normalizeRange(start, end);
+        List<EstadoRow> rows = reportService.porEstado(range.start(), range.end());
+
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=expedientes_por_estado.csv");
+
+        try (PrintWriter writer = response.getWriter()) {
+            writer.println("Estado,Total");
+            for (EstadoRow r : rows) {
+                String estado = r.getEstado().replaceAll(",", " ");
+                writer.printf("%s,%d%n", estado, r.getTotal());
             }
         }
     }

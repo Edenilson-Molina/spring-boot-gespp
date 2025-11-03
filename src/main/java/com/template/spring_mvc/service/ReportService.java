@@ -5,6 +5,7 @@ import com.template.spring_mvc.repository.ExpedienteRepository;
 import com.template.spring_mvc.repository.projection.ActivosEmpresaRow;
 import com.template.spring_mvc.repository.projection.CarreraEstadoRow;
 import com.template.spring_mvc.repository.projection.EmpresaEstadoRow;
+import com.template.spring_mvc.repository.projection.EstadoRow;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -64,5 +65,10 @@ public class ReportService {
             pivot.add(r.getEstado(), r.getTotal());
         }
         return map.values().stream().collect(Collectors.toList());
+    }
+
+    public List<EstadoRow> porEstado(LocalDate start, LocalDate end) {
+        DateRange range = normalizeRange(start, end);
+        return expedienteRepository.countPorEstado(range.start(), range.end());
     }
 }
