@@ -49,6 +49,7 @@
                 <h2 class="text-xl font-semibold text-gray-900">Informes mensuales</h2>
             </div>
 
+            <div th:if="${uploadError}" class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700" th:text="${uploadError}"></div>
             <div th:if="${error}" class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700" th:text="${error}"></div>
             <div th:if="${success}" class="mb-4 rounded border border-green-200 bg-green-50 p-3 text-sm text-green-700" th:text="${success}"></div>
 
